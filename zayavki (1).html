@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Заявки на технику</title>
+    <script>
+        function login() {
+            const login = document.getElementById("login").value;
+            const password = document.getElementById("password").value;
+
+            if (login === "3333333" && password === "3333333") {
+                document.getElementById("login-section").style.display = "none";
+                document.getElementById("main-section").style.display = "block";
+                document.getElementById("role-label").innerText = "Вы вошли как диспетчер";
+            } else if (login === "master" && password === "master") {
+                document.getElementById("login-section").style.display = "none";
+                document.getElementById("main-section").style.display = "block";
+                document.getElementById("role-label").innerText = "Вы вошли как мастер";
+            } else {
+                alert("Неверный логин или пароль");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="login-section">
+        <h2>Вход</h2>
+        <input type="text" id="login" placeholder="Логин"><br>
+        <input type="password" id="password" placeholder="Пароль"><br>
+        <button onclick="login()">Войти</button>
+    </div>
+
+    <div id="main-section" style="display:none;">
+        <h2 id="role-label"></h2>
+        <p>Здесь будет интерфейс заявок и отображение техники.</p>
+    </div>
+</body>
+</html>
