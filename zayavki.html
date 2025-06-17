@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<title>Заявки</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+
+let tech = JSON.parse(localStorage.getItem('tech') || '[]');
+
+function addTech() {
+  const name = document.getElementById("techName").value;
+  const num = document.getElementById("techNumber").value;
+  const driver = document.getElementById("techDriver").value;
+  if (!name || !num) return alert("Заполните название и номер!");
+  tech.push({ name, num, driver, status: "свободна" });
+  localStorage.setItem('tech', JSON.stringify(tech));
+  renderTech();
+  document.getElementById("techName").value = "";
+  document.getElementById("techNumber").value = "";
+  document.getElementById("techDriver").value = "";
+}
+
+function renderTech() {
+  const div = document.getElementById("techList");
+  if (!div) return;
+  div.innerHTML = "";
+  tech.forEach((t, i) => {
+    const d = document.createElement("div");
+    d.innerHTML = `${t.name} (${t.num}) — ${t.driver || "без водителя"} [${t.status}] 
+      <button onclick="removeTech(${i})">Удалить</button>`;
+    div.appendChild(d);
+  });
+}
+
+function removeTech(i) {
+  tech.splice(i, 1);
+  localStorage.setItem('tech', JSON.stringify(tech));
+  renderTech();
+}
+
+function showTechPanel() {
+  document.getElementById("techPanel").style.display = "block";
+  renderTech();
+}
+
+
+function completeRequest(index) {
+  requests[index].done = true;
+
+  // найти назначенную технику (по имени), вернуть статус "свободна"
+  const assignedTechName = requests[index].tech;
+  const assignedTech = tech.find(t => t.name === assignedTechName);
+  if (assignedTech) {
+    assignedTech.status = "свободна";
+  }
+
+  localStorage.setItem("requests", JSON.stringify(requests));
+  localStorage.setItem("tech", JSON.stringify(tech));
+  renderRequests();
+  renderTech();
+  renderTechDropdown();
+}
+</script>
+<style>
+    body { font-family: sans-serif; margin: 20px; }
+    #mainContent { display: none; }
+    .block { margin: 20px 0; }
+    button { margin: 5px; }
+  </style>
+</head>
+<body>
+<div class="block" id="authPanel">
+<h2>Выберите роль</h2>
+<select id="roleSelect">
+<option value="master">Мастер участка</option>
+<option value="dispatcher">Диспетчер</option>
+</select>
+<button onclick="login()">Войти</button>
+</div>
+<div id="mainContent">
+<h2>Система заявок <button onclick="logout()" style="float:right;">Выйти</button></h2>
+<p id="roleInfo"></p>
+<div class="block" id="masterPanel" style="display:none">
+<h3>Создать заявку</h3>
+      Тип техники: <input id="techType"/><br/>
+      Позиция: <input id="position"/><br/>
+      Комментарий: <input id="comment"/><br/>
+<button onclick="createRequest()">Создать</button>
+</div>
+<div class="block" id="dispatcherPanel" style="display:none"><button onclick="showTechPanel()">Раздел техники</button>
+<h3>Заявки</h3>
+<div id="requests"></div>
+<h3>Выполненные</h3>
+<div id="doneRequests"></div>
+<button onclick="exportDone()">Экспорт в Excel</button>
+</div>
+<div id="mapContainer" style="margin-top:20px;"><iframe frameborder="0" height="500" src="map.html" width="100%"></iframe></div></div>
+<div class="block" id="techPanel" style="display:none;">
+<h3>Список техники</h3>
+<div id="techList"></div>
+<h4>Добавить технику</h4>
+  Название: <input id="techName"/> Госномер: <input id="techNumber"/> Водитель: <input id="techDriver"/>
+<button onclick="addTech()">Добавить</button>
+</div>
+</body>
+</html>
